@@ -21,12 +21,16 @@ jobs:
       with:
         # Install a specific version of uv.
         version: "0.4.29"
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
   
+    # - name: Set up Python ${{ matrix.python-version }}
+    #   uses: actions/setup-python@v5
+    #   with:
+    #     python-version: ${{ matrix.python-version }}
+
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: 'uv'
+      uses: uv python install ${{ matrix.python-version }}
 
     - name: Install the project
       run: uv sync --all-extras --dev
@@ -45,12 +49,16 @@ jobs:
       with:
         # Install a specific version of uv.
         version: "0.4.29"
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        cache: 'uv'
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+  
+    # - name: Set up Python ${{ matrix.python-version }}
+    #   uses: actions/setup-python@v5
+    #   with:
+    #     python-version: ${{ matrix.python-version }}
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: uv python install ${{ matrix.python-version }}
     
     - name: Install dependencies
       run: |
