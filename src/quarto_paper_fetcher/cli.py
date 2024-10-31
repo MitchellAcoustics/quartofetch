@@ -11,6 +11,7 @@ from .logging_config import setup_logging, stage, substage
 from .paper_manager import Paper, PaperManager
 from .exceptions import QuartoFetcherError, ConfigurationError
 
+
 class CLI:
     """CLI handler for Quarto Paper Fetcher."""
 
@@ -23,32 +24,27 @@ class CLI:
             description="Fetch and manage Quarto paper repositories"
         )
         parser.add_argument(
-            "--force", "-f",
-            action="store_true",
-            help="Force update of all papers"
+            "--force", "-f", action="store_true", help="Force update of all papers"
         )
         parser.add_argument(
             "--config",
             type=Path,
             default=Path("research/_paper_sources.yml"),
-            help="Path to configuration file (default: research/_paper_sources.yml)"
+            help="Path to configuration file (default: research/_paper_sources.yml)",
         )
         parser.add_argument(
             "--log-level",
             default="SUCCESS",
             choices=["DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR"],
-            help="Set logging level"
+            help="Set logging level",
         )
         parser.add_argument(
-            "--debug", "-d",
+            "--debug",
+            "-d",
             action="store_true",
-            help="Enable debug logging (overrides --log-level)"
+            help="Enable debug logging (overrides --log-level)",
         )
-        parser.add_argument(
-            "--log-file",
-            type=Path,
-            help="Path to log file"
-        )
+        parser.add_argument("--log-file", type=Path, help="Path to log file")
         return parser
 
     @stage("Configuration Loading")
@@ -57,15 +53,17 @@ class CLI:
         try:
             if not config_path.exists():
                 raise ConfigurationError(f"Config file not found: {config_path}")
-                
+
             config = yaml.safe_load(config_path.read_text())
             if not isinstance(config, dict):
-                raise ConfigurationError("Invalid config format: must be a YAML dictionary")
-            
+                raise ConfigurationError(
+                    "Invalid config format: must be a YAML dictionary"
+                )
+
             papers_config = config.get("papers", [])
             if not isinstance(papers_config, list):
                 raise ConfigurationError("Invalid papers configuration: must be a list")
-                
+
             return config
 
         except yaml.YAMLError as e:
@@ -82,9 +80,13 @@ class CLI:
                 if paper := Paper.from_dict(paper_config):
                     papers.append(paper)
                 else:
-                    logger.warning(f"Skipping invalid paper configuration at index {idx}")
+                    logger.warning(
+                        f"Skipping invalid paper configuration at index {idx}"
+                    )
             except Exception as e:
-                logger.error(f"Failed to process paper configuration at index {idx}: {e}")
+                logger.error(
+                    f"Failed to process paper configuration at index {idx}: {e}"
+                )
         return papers
 
     @substage("Paper Processing")
@@ -107,7 +109,7 @@ class CLI:
         """Log processing results with proper formatting."""
         success_count = sum(results)
         total_count = len(results)
-        
+
         with logger.contextualize(padding=""):
             logger.info("═" * 80)
             if success_count == total_count:
@@ -128,7 +130,7 @@ class CLI:
         """Execute the CLI application."""
         try:
             args = self.parser.parse_args()
-            
+
             # Setup logging
             log_level = "DEBUG" if args.debug else args.log_level
             setup_logging(console_level=log_level, log_file=args.log_file)
@@ -149,7 +151,7 @@ class CLI:
 
             # Process papers
             results = self._process_papers(papers, args.force)
-            
+
             # Log results
             self._log_results(results, papers)
 
@@ -165,9 +167,11 @@ class CLI:
             logger.exception(f"Fatal error: {e}")
             return 1
 
+
 def main() -> int:
     """Entry point for the Quarto Paper Fetcher CLI."""
     return CLI().run()
+
 
 if __name__ == "__main__":
     sys.exit(main())

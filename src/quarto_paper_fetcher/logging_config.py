@@ -7,16 +7,17 @@ from loguru import logger
 # Global setting for console level
 console_level_setting = "SUCCESS"
 
+
 class LogFormatter:
     """Unified formatter for both console and file output."""
-    
+
     CONSOLE_FORMAT = (
         "<green>{time:HH:mm:ss}</green> | "
         "<level>{level: <8}</level> | "
         "{extra[padding]}<level>{message}</level>\n"
         "{exception}"
     )
-    
+
     FILE_FORMAT = (
         "{time:YYYY-MM-DD HH:mm:ss} | "
         "{level: <8} | "
@@ -24,18 +25,20 @@ class LogFormatter:
         "{message}\n"
         "{exception}"
     )
-    
+
     def __init__(self, fmt_type: str = "console"):
         self.padding = 0
         self.fmt_type = fmt_type
-        
+
     def format(self, record):
         if self.fmt_type == "console":
             if "padding" not in record["extra"]:
                 record["extra"]["padding"] = ""
             return self.CONSOLE_FORMAT
         else:
-            metadata_length = len(f"{record['name']}:{record['function']}:{record['line']}")
+            metadata_length = len(
+                f"{record['name']}:{record['function']}:{record['line']}"
+            )
             self.padding = max(self.padding, metadata_length)
             record["extra"]["padding"] = " " * (self.padding - metadata_length)
             return self.FILE_FORMAT
@@ -45,17 +48,14 @@ def setup_logging(console_level: str = "SUCCESS", log_file: str | None = None) -
     """Configure logging with optional file output."""
     global console_level_setting
     console_level_setting = console_level
-    
+
     logger.remove()
-    
+
     console_formatter = LogFormatter("console")
     logger.add(
-        sys.stderr,
-        format=console_formatter.format,
-        level=console_level,
-        colorize=True
+        sys.stderr, format=console_formatter.format, level=console_level, colorize=True
     )
-    
+
     if log_file:
         file_formatter = LogFormatter("file")
         logger.add(
@@ -63,12 +63,13 @@ def setup_logging(console_level: str = "SUCCESS", log_file: str | None = None) -
             format=file_formatter.format,
             level="DEBUG",
             rotation="1 MB",
-            enqueue=True
+            enqueue=True,
         )
 
 
 def stage(name: str):
     """Decorator to mark and log processing stages."""
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -89,12 +90,15 @@ def stage(name: str):
                 logger.info(f"{'═' * (len(stage_header) + 2 * len(padding))}\n")
 
             return result
+
         return wrapper
+
     return decorator
 
 
 def substage(name: str):
     """Decorator to mark and log processing substages."""
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -110,5 +114,7 @@ def substage(name: str):
                     result = func(*args, **kwargs)
 
             return result
+
         return wrapper
+
     return decorator

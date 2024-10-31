@@ -9,9 +9,8 @@ import subprocess
 
 from quarto_paper_fetcher.paper_manager import Paper, PaperManager
 from quarto_paper_fetcher.quarto_project import QuartoProject
-from quarto_paper_fetcher.exceptions import (
-    GitTimeoutError, ConfigurationError
-)
+from quarto_paper_fetcher.exceptions import GitTimeoutError, ConfigurationError
+
 
 # Fixtures
 @pytest.fixture
@@ -19,6 +18,7 @@ def temp_dir():
     """Create a temporary directory for tests."""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield Path(tmpdir)
+
 
 @pytest.fixture
 def sample_paper():
@@ -34,19 +34,18 @@ def sample_paper():
 def quarto_yml():
     """Create a sample Quarto configuration."""
     return {
-        "project": {
-            "type": "manuscript"
-        },
+        "project": {"type": "manuscript"},
         "manuscript": {
             "article": "paper.qmd",
             "notebooks": ["./notebook1.ipynb", "./notebook2.ipynb"],
-            },
+        },
     }
+
 
 @pytest.fixture
 def mock_subprocess():
     """Mock subprocess for git operations."""
-    with patch('subprocess.run') as mock_run:
+    with patch("subprocess.run") as mock_run:
         mock_run.return_value.stdout = "abcdef123456\n"
         yield mock_run
 
@@ -58,7 +57,7 @@ class TestPaper:
         data = {
             "repo_url": "https://github.com/user/repo",
             "target_folder": "paper1",
-            "branch": "main"
+            "branch": "main",
         }
         paper = Paper.from_dict(data)
         assert paper is not None
@@ -72,6 +71,7 @@ class TestPaper:
         paper = Paper.from_dict(invalid_data)
         assert paper is None
 
+
 # PaperManager Tests
 class TestPaperManager:
     def test_validate_paper(self, sample_paper):
@@ -82,11 +82,13 @@ class TestPaperManager:
     def test_validate_paper_invalid_path(self):
         """Test paper validation with invalid path."""
         manager = PaperManager()
-        paper = Paper(repo_url="https://github.com/user/repo", target_folder="../invalid")
+        paper = Paper(
+            repo_url="https://github.com/user/repo", target_folder="../invalid"
+        )
         with pytest.raises(ConfigurationError):
             manager._validate_paper(paper)
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_get_commit(self, mock_run, sample_paper):
         """Test getting commit hash."""
         mock_run.return_value.stdout = "abcdef123456 HEAD\n"
@@ -94,7 +96,7 @@ class TestPaperManager:
         commit = manager._get_commit(sample_paper.repo_url, "HEAD")
         assert commit == "abcdef123456"
 
-    @patch('subprocess.run')
+    @patch("subprocess.run")
     def test_get_commit_timeout(self, mock_run, sample_paper):
         """Test commit hash timeout."""
         mock_run.side_effect = subprocess.TimeoutExpired(cmd=[], timeout=30)
@@ -105,8 +107,9 @@ class TestPaperManager:
     def test_process_paper(self, temp_dir, mock_subprocess, sample_paper):
         """Test processing a paper."""
         manager = PaperManager()
-        with patch.object(manager, '_copy_files'):
+        with patch.object(manager, "_copy_files"):
             assert manager.process(sample_paper) is True
+
 
 # QuartoProject Tests
 class TestQuartoProject:
@@ -139,6 +142,7 @@ class TestQuartoProject:
         assert Path("paper.qmd") in files["standard"]
         assert Path("references.bib") in files["standard"]
 
+
 # Integration Tests
 class TestIntegration:
     def test_full_paper_processing(self, temp_dir, mock_subprocess):
@@ -148,7 +152,8 @@ class TestIntegration:
 
         # Run CLI
         from quarto_paper_fetcher.cli import CLI
+
         cli = CLI()
-        with patch('sys.argv', ['qpf', '--config', str(config_path)]):
+        with patch("sys.argv", ["qpf", "--config", str(config_path)]):
             result = cli.run()
             assert result == 1

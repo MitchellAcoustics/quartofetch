@@ -11,11 +11,18 @@ from loguru import logger
 
 from .quarto_project import QuartoProject
 from .logging_config import stage, substage
-from .exceptions import GitError, GitTimeoutError, GitAuthenticationError, ConfigurationError
+from .exceptions import (
+    GitError,
+    GitTimeoutError,
+    GitAuthenticationError,
+    ConfigurationError,
+)
+
 
 @dataclass
 class Paper:
     """Paper source configuration."""
+
     repo_url: str
     target_folder: str
     branch: Optional[str] = None
@@ -25,16 +32,18 @@ class Paper:
     def from_dict(cls, data: dict) -> Optional["Paper"]:
         """Create a Paper instance from a dictionary."""
         try:
-            return cls(**{
-                k: data[k] for k in ["repo_url", "target_folder"]
-                if k in data
-            }, **{
-                k: data[k] for k in ["branch", "commit"]
-                if k in data
-            }) if all(k in data for k in ["repo_url", "target_folder"]) else None
+            return (
+                cls(
+                    **{k: data[k] for k in ["repo_url", "target_folder"] if k in data},
+                    **{k: data[k] for k in ["branch", "commit"] if k in data},
+                )
+                if all(k in data for k in ["repo_url", "target_folder"])
+                else None
+            )
         except (KeyError, TypeError) as e:
             logger.error(f"Invalid paper configuration: {e}")
             return None
+
 
 class PaperManager:
     """Manages paper fetching and processing."""
@@ -53,7 +62,9 @@ class PaperManager:
             try:
                 shutil.rmtree(temp_dir)
             except Exception as e:
-                logger.warning(f"Failed to clean up temporary directory {temp_dir}: {e}")
+                logger.warning(
+                    f"Failed to clean up temporary directory {temp_dir}: {e}"
+                )
 
     @stage("Paper Processing")
     def process(self, paper: Paper) -> bool:
@@ -61,12 +72,12 @@ class PaperManager:
         try:
             logger.info("📑 Processing paper: {}", paper.target_folder)
             self._validate_paper(paper)
-            
+
             paper_dir = Path("research/papers") / paper.target_folder
             commit_file = paper_dir / "last_commit.txt"
 
             latest_commit = self._get_commit(paper.repo_url, self._get_ref(paper))
-            
+
             if self._check_if_updated(commit_file, latest_commit):
                 return True
 
@@ -99,7 +110,9 @@ class PaperManager:
         try:
             Path(paper.target_folder).resolve().relative_to(Path.cwd())
         except ValueError:
-            raise ConfigurationError("Target folder path must be relative to current directory")
+            raise ConfigurationError(
+                "Target folder path must be relative to current directory"
+            )
 
     def _get_ref(self, paper: Paper) -> str:
         """Get git reference based on paper configuration."""
@@ -132,12 +145,12 @@ class PaperManager:
                 text=True,
                 check=True,
                 timeout=30,
-                env={"GIT_SSL_NO_VERIFY": "false"}
+                env={"GIT_SSL_NO_VERIFY": "false"},
             )
             if not result.stdout:
                 raise GitError(f"No commit found for ref: {ref}")
             return result.stdout.split()[0]
-            
+
         except subprocess.TimeoutExpired:
             raise GitTimeoutError(f"Timeout accessing repository: {repo_url}")
         except subprocess.CalledProcessError as e:
@@ -160,7 +173,7 @@ class PaperManager:
                 check=True,
                 capture_output=True,
                 timeout=self.timeout,
-                env={"GIT_SSL_NO_VERIFY": "false"}
+                env={"GIT_SSL_NO_VERIFY": "false"},
             )
 
             if paper.commit:
@@ -170,14 +183,14 @@ class PaperManager:
                     check=True,
                     capture_output=True,
                     cwd=path,
-                    timeout=30
+                    timeout=30,
                 )
-                
+
         except subprocess.TimeoutExpired:
             raise GitTimeoutError(f"Timeout cloning repository: {paper.repo_url}")
         except subprocess.CalledProcessError as e:
             raise GitError(f"Clone failed: {e.stderr.strip()}")
-        
+
     @substage("Copying files")
     def _copy_files(self, source: Path, target: Path, folder: str) -> None:
         """Copy files to target directory."""
@@ -219,7 +232,7 @@ class PaperManager:
                         )
                     else:
                         logger.warning("Source freeze directory not found: {}", src)
-                        
+
         except Exception as e:
             logger.error("Failed to copy files: {}", str(e))
             raise

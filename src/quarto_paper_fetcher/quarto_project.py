@@ -8,6 +8,7 @@ from loguru import logger
 from .logging_config import stage, substage
 from .exceptions import QuartoError
 
+
 class QuartoProject:
     """Analyzes and processes Quarto projects."""
 
@@ -74,7 +75,9 @@ class QuartoProject:
             # Check manuscript configuration
             if self.project_type == "manuscript":
                 if article := self.config.get("manuscript", {}).get("article"):
-                    logger.success("Found main document in manuscript config: {}", article)
+                    logger.success(
+                        "Found main document in manuscript config: {}", article
+                    )
                     return Path(article)
 
             # Check common names
@@ -95,19 +98,19 @@ class QuartoProject:
             raise QuartoError("No main document found")
         except Exception as e:
             raise QuartoError(f"Failed to find main document: {e}")
-        
+
     def _find_files(self, pattern: str) -> Set[Path]:
         """Find files matching pattern relative to repo directory.
-        
+
         Args:
             pattern: Glob pattern to match files against
-            
+
         Returns:
             Set of Path objects relative to repo directory
         """
         try:
             return {
-                f.relative_to(self.repo_dir) 
+                f.relative_to(self.repo_dir)
                 for f in self.repo_dir.glob(pattern)
                 if f.is_file()  # Only include files, not directories
             }
@@ -139,7 +142,7 @@ class QuartoProject:
             return bib_files
         except Exception as e:
             raise QuartoError(f"Failed to collect bibliography files: {e}")
-        
+
     @substage("Notebook Collection")
     def _get_notebooks(self) -> Set[Path]:
         """Get notebooks based on project type."""
@@ -149,7 +152,9 @@ class QuartoProject:
 
             if self.project_type == "manuscript":
                 # Get notebooks from manuscript config
-                config_notebooks = self.config.get("manuscript", {}).get("notebooks", [])
+                config_notebooks = self.config.get("manuscript", {}).get(
+                    "notebooks", []
+                )
                 if config_notebooks:
                     logger.info("Found notebooks in manuscript config:")
                     for nb in config_notebooks:
@@ -183,7 +188,7 @@ class QuartoProject:
             return notebooks
         except Exception as e:
             raise QuartoError(f"Failed to collect notebooks: {e}")
-        
+
     @substage("Support Directory Collection")
     def _get_support_directories(self) -> Set[Path]:
         """Get support directories based on project type."""
@@ -209,7 +214,9 @@ class QuartoProject:
     def _get_freeze_directories(self) -> Set[Path]:
         """Get freeze directories based on project type."""
         try:
-            logger.debug(f"Collecting freeze directories for {self.project_type} project")
+            logger.debug(
+                f"Collecting freeze directories for {self.project_type} project"
+            )
             freeze_dirs = set()
             freeze_base = self.repo_dir / "_freeze"
 
@@ -218,7 +225,9 @@ class QuartoProject:
                 freeze_path = freeze_base / self.main_doc.stem
                 if freeze_path.exists():
                     freeze_dir = Path("_freeze") / self.main_doc.stem
-                    logger.success(f"Found default project freeze directory: {freeze_dir}")
+                    logger.success(
+                        f"Found default project freeze directory: {freeze_dir}"
+                    )
                     freeze_dirs.add(freeze_dir)
             else:
                 # For manuscript projects, check all potential freeze directories
