@@ -1,4 +1,4 @@
-"""Quarto Paper Fetcher - manage Quarto paper repositories."""
+"""Qfetch - manage Quarto paper repositories."""
 
 from importlib.metadata import version, PackageNotFoundError
 from .paper_manager import Paper, PaperManager
@@ -6,7 +6,7 @@ from .quarto_project import QuartoProject
 from .logging_config import setup_logging, stage, substage
 
 try:
-    __version__ = version("quarto-paper-fetcher")
+    __version__ = version("qfetch")
 except PackageNotFoundError:  # pragma: no cover
     # Package is not installed
     __version__ = "0.0.0"

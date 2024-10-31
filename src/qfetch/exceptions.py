@@ -1,13 +1,13 @@
 """Custom exceptions for the Quarto Paper Fetcher."""
 
 
-class QuartoFetcherError(Exception):
+class QfetchError(Exception):
     """Base exception for all Quarto Paper Fetcher errors."""
 
     pass
 
 
-class GitError(QuartoFetcherError):
+class GitError(QfetchError):
     """Base exception for git operations."""
 
     pass
@@ -25,13 +25,13 @@ class GitAuthenticationError(GitError):
     pass
 
 
-class QuartoError(QuartoFetcherError):
+class QuartoError(QfetchError):
     """Base exception for Quarto operations."""
 
     pass
 
 
-class ConfigurationError(QuartoFetcherError):
+class ConfigurationError(QfetchError):
     """Raised for configuration-related errors."""
 
     pass

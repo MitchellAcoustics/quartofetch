@@ -55,9 +55,6 @@ coverage.xml
 research/papers/
 _freeze/
 *.log
-fetcher_*.log
-quarto-paper-fetcher.log
-paper_fetch.log
 
 # OS specific
 .DS_Store

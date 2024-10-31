@@ -113,7 +113,7 @@ wheels = [
 ]
 
 [[package]]
-name = "quarto-paper-fetcher"
+name = "qfetch"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

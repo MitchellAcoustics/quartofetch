@@ -1,4 +1,4 @@
-# Quarto Paper Fetcher
+# Q(uarto) Fetch
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -27,7 +27,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 Use `uvx` to run `qfetch` directly without installation:
 
 ```bash
-uvx --from quarto-paper-fetcher qfetch
+uvx qfetch
 ```
 
 ### Permanent Installation
@@ -35,7 +35,7 @@ uvx --from quarto-paper-fetcher qfetch
 If you prefer to install the tool permanently:
 
 ```bash
-uv tool install quarto-paper-fetcher
+uv tool install qfetch
 ```
 
 ### Development Installation
@@ -43,8 +43,8 @@ uv tool install quarto-paper-fetcher
 For development work:
 
 ```bash
-git clone https://github.com/yourusername/quarto-paper-fetcher
-cd quarto-paper-fetcher
+git clone https://github.com/MitchellAcoustics/qfetch
+cd qfetch
 uv sync
 ```
 
@@ -67,10 +67,10 @@ papers:
 
 ```bash
 # Using uvx (recommended)
-uvx --from quarto-paper-fetcher qfetch
+uvx qfetch
 
 # Or with specific options
-uvx --from quarto-paper-fetcher qfetch --config path/to/config.yml --force --log-level DEBUG
+uvx qfetch --config path/to/config.yml --force --log-level DEBUG
 
 # If permanently installed
 qfetch --config path/to/config.yml
