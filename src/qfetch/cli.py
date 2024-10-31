@@ -1,4 +1,4 @@
-"""Command-line interface for Quarto Paper Fetcher."""
+"""Command-line interface for Qfetch"""
 
 import sys
 import argparse
@@ -9,11 +9,11 @@ from loguru import logger
 
 from .logging_config import setup_logging, stage, substage
 from .paper_manager import Paper, PaperManager
-from .exceptions import QuartoFetcherError, ConfigurationError
+from .exceptions import QfetchError, ConfigurationError
 
 
 class CLI:
-    """CLI handler for Quarto Paper Fetcher."""
+    """CLI handler for Qfetch"""
 
     def __init__(self):
         self.parser = self._create_parser()
@@ -138,7 +138,7 @@ class CLI:
             # Log startup banner
             with logger.contextualize(padding=""):
                 logger.info("═" * 80)
-                logger.success("🚀 QUARTO PAPER FETCHER")
+                logger.success("🚀 Q(UARTO) FETCH")
                 logger.info("═" * 80)
 
             # Load and process configuration
@@ -160,7 +160,7 @@ class CLI:
         except KeyboardInterrupt:
             logger.warning("Operation interrupted by user")
             return 130
-        except QuartoFetcherError as e:
+        except QfetchError as e:
             logger.error(f"Configuration error: {e}")
             return 1
         except Exception as e:
@@ -169,7 +169,7 @@ class CLI:
 
 
 def main() -> int:
-    """Entry point for the Quarto Paper Fetcher CLI."""
+    """Entry point for the Qfetch CLI."""
     return CLI().run()
 
 

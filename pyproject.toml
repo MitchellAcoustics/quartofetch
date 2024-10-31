@@ -1,7 +1,7 @@
 [project]
-name = "quarto-paper-fetcher"
+name = "qfetch"
 version = "0.1.0"
-description = "Fetch and mangage Quarto paper repositories"
+description = "Fetch and manage Quarto paper repositories"
 readme = "README.md"
 authors = [
     { name = "Andrew Mitchell", email = "a.j.mitchell@ucl.ac.uk" }
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-qfetch = "quarto_paper_fetcher.cli:main"
+qfetch = "qfetch.cli:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -31,6 +31,6 @@ log_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)
 [dependency-groups]
 dev = [
     "bump2version>=1.0.1",
-    "pytest-loguru>=0.4.0",
     "pytest>=8.3.3",
+    "pytest-loguru>=0.4.0",
 ]
