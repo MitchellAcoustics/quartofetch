@@ -59,12 +59,8 @@ jobs:
 
     - name: Set up Python ${{ matrix.python-version }}
       run: uv python install ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        uv pip install ruff
-    
+       
     - name: Lint with ruff
       run: |
-        ruff check .
-        ruff format --check .
+        uvx ruff check .
+        uvx ruff format --check .
