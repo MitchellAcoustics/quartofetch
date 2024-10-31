@@ -80,7 +80,7 @@ qfetch --config path/to/config.yml
 
 The tool expects and creates the following directory structure:
 
-```
+```bash
 your-research-project/
 ├── research/
 │   ├── _paper_sources.yml
@@ -123,29 +123,6 @@ your-research-project/
 | `--debug`     | Enable debug logging       | `False`                       |
 | `--log-file`  | Path to log file           | None                          |
 
-## Features
-
-### Paper Management
-
-- Automatic fetching of paper repositories
-- Smart updates based on commit tracking
-- Support for branch and commit pinning
-- Cleanup of failed fetches
-
-### Quarto Integration
-
-- Automatic detection of project type
-- Preservation of freeze directories
-- Support for manuscript configurations
-- Handling of embedded notebooks
-
-### Logging and Monitoring
-
-- Detailed progress tracking
-- Hierarchical logging output
-- Optional file logging
-- Configurable verbosity levels
-
 ## Error Handling
 
 The tool includes comprehensive error handling for:
@@ -184,8 +161,3 @@ pytest
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with [hatchling](https://github.com/pypa/hatch)
-- Logging powered by [loguru](https://github.com/Delgan/loguru)
