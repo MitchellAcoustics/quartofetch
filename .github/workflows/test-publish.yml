@@ -1,0 +1,92 @@
+name: Test PyPI Publish
+
+on:
+  workflow_call:
+    inputs:
+      bump_rule:
+        description: 'Base version to test (major/minor/patch)'
+        type: string
+        required: true
+    outputs:
+      version:
+        description: "The generated development version"
+        value: ${{ jobs.publish-test.outputs.version }}
+  workflow_dispatch:
+    inputs:
+      bump_rule:
+        description: 'Base version to test (major/minor/patch)'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+        required: true
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+  
+  test-publish:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "0.4.29"
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    - name: Set up Python
+      run: uv python install 3.12
+
+    - name: Install build dependencies
+      run: uv pip install bump2version
+
+    - name: Generate development version
+      id: version
+      run: |
+        # Handle different trigger types
+        BUMP_RULE="${{ inputs.bump_rule || 'patch' }}"
+        
+        # Get the next version without committing
+        NEXT_VERSION=$(bump2version --list $BUMP_RULE --dry-run | grep new_version | sed -r s,"^.*=",, )
+        
+        # If we already have a dev version of the next version
+        if grep -q "${NEXT_VERSION}\.dev[0-9]*$" pyproject.toml; then
+          # Just increment the dev number
+          bump2version --allow-dirty --no-commit --no-tag dev
+        else
+          # Start dev versioning for the next version
+          bump2version --allow-dirty --no-commit --no-tag --new-version "${NEXT_VERSION}.dev1" $BUMP_RULE
+        fi
+        
+        # Store version for later use
+        NEW_VERSION=$(bump2version --list $BUMP_RULE --dry-run | grep current_version | sed -r s,"^.*=",, )
+        echo "version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+        echo "VERSION=${NEW_VERSION}" >> $GITHUB_ENV
+        echo "Generated version: ${NEW_VERSION}"
+
+    - name: Build package
+      run: uv build
+
+    - name: Publish to TestPyPI
+      run: |
+        uv publish \
+          --repository-url https://test.pypi.org/legacy/
+
+    - name: Test install from TestPyPI
+      run: |
+        sleep 60  # Wait for package to be available
+        uv pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "quartofetch==${{ env.VERSION }}"

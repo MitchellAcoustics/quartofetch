@@ -1,6 +1,11 @@
 name: CI
 
 on:
+  workflow_call:
+    outputs:
+      tests-passed:
+        description: "Indicates if all tests passed"
+        value: ${{ jobs.test.result == 'success' && jobs.lint.result == 'success' }}
   push:
     branches: [ main ]
   pull_request:

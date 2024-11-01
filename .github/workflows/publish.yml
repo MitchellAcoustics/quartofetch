@@ -14,77 +14,21 @@ on:
         default: 'patch'
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.12"]
+  validate:
+    uses: ./.github/workflows/ci.yml
 
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-      with:
-        version: "0.4.29"
-        enable-cache: true
-        cache-dependency-glob: "uv.lock"
-
-    - name: Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
-
-    - name: Install the project
-      run: uv sync --all-extras --dev
-
-    - name: Run tests
-      run: uv run pytest tests
-
-  build-and-publish-testpypi:
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # Required for PyPI trusted publishing
-    
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Install uv
-      uses: astral-sh/setup-uv@v3
-      with:
-        version: "0.4.29"
-        enable-cache: true
-        cache-dependency-glob: "uv.lock"
-
-    - name: Set up Python
-      run: uv python install 3.12
-
-    - name: Install build dependencies
-      run: uv pip install build
-
-    - name: Build package
-      run: python -m build
-
-    - name: Publish to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
-
-    - name: Test install from TestPyPI
-      run: |
-        sleep 60  # Wait for package to be available
-        uv pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ quartofetch
+  test-publish:
+    needs: validate
+    uses: ./.github/workflows/test-publish.yml
+    with:
+      bump_rule: ${{ inputs.bump_rule }}
 
   version-and-publish:
-    needs: build-and-publish-testpypi
+    needs: [validate, test-publish]
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write  # Required for PyPI trusted publishing
-    
+      id-token: write
     steps:
     - uses: actions/checkout@v4
       with:
@@ -110,18 +54,22 @@ jobs:
 
     - name: Bump version
       run: |
-        bump2version ${{ inputs.bump_rule }}
+        # If we have a dev version, strip it and use its base version
+        if grep -q "\.dev[0-9]*$" pyproject.toml; then
+          CURRENT_VERSION=$(bump2version --list ${{ inputs.bump_rule }} --dry-run | grep current_version | sed -r s,"^.*=",, )
+          BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/\.dev[0-9]*$//')
+          bump2version --allow-dirty --new-version $BASE_VERSION ${{ inputs.bump_rule }}
+        else
+          bump2version ${{ inputs.bump_rule }}
+        fi
         git push
         git push --tags
 
-    - name: Install build dependencies
-      run: uv pip install build
-
     - name: Build package
-      run: python -m build
+      run: uv build
 
     - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      run: uv publish
 
     - name: Create GitHub Release
       env:
