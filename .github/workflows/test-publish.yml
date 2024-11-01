@@ -71,6 +71,7 @@ jobs:
       id: version
       run: |
         # Handle different trigger types
+        # TODO: If triggered from publish, use rc instead of dev
         BUMP_RULE="${{ inputs.bump_rule || 'dev' }}"
         echo "Bumping version with rule: $BUMP_RULE"
         

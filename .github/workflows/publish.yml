@@ -22,6 +22,9 @@ jobs:
     uses: ./.github/workflows/test-publish.yml
     with:
       bump_rule: ${{ inputs.bump_rule }}
+    permissions:
+      id-token: write
+      contents: write
 
   version-and-publish:
     needs: [validate, test-publish]
