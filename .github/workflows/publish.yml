@@ -4,10 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       bump_rule:
-        description: 'Version bump rule (major/minor/patch)'
+        description: 'Version bump rule (major/minor/patch/dev)'
         required: true
         type: choice
         options:
+          - dev
           - patch
           - minor
           - major
@@ -58,7 +59,7 @@ jobs:
 
     - name: Bump version
       run: |
-        bump2version ${{ inputs.bump_rule }}
+        bump2version ${{ inputs.bump_rule }} --no-tag
         git push origin main
         git push origin main --tags
         # Store version for later use
