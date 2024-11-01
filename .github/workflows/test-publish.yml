@@ -82,9 +82,9 @@ jobs:
     - name: Publish package distributions to TestPyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        repository-url: https://test.pypi.org/legacy/
+        repository-url: https://test.pypi.org/simple/
 
     - name: Test install from TestPyPI
       run: |
-        sleep 120  # Wait for package to be available
+        sleep 60  # Wait for package to be available
         uv tool install quartofetch@${{ env.NEW_VERSION }} --index https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --index-strategy unsafe-best-match
