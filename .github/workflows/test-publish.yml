@@ -45,7 +45,7 @@ jobs:
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref }} # needed for push after bump2version
-        token: ${{ secrets.pat }}
+        token: ${{ secrets.GITHUB_TOKEN }}
     
     - name: Set commit configs (for bump2version)
       run: |
