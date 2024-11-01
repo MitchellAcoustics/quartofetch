@@ -6,7 +6,8 @@ on:
       bump_rule:
         description: 'Base version to test (major/minor/patch)'
         type: string
-        required: true
+        required: false
+        default: 'dev'
     outputs:
       version:
         description: "The generated development version"
@@ -17,10 +18,11 @@ on:
         description: 'Base version to test (major/minor/patch)'
         type: choice
         options:
+          - dev
           - patch
           - minor
           - major
-        default: 'patch'
+        default: 'dev'
         required: true
   pull_request:
     branches: [ main ]
@@ -29,13 +31,14 @@ jobs:
   validate:
     uses: ./.github/workflows/ci.yml
   
-  test-publish:
+  publish-test:
     needs: validate
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     outputs:
       version: ${{ steps.version.outputs.version }}
+    
     steps:
     - uses: actions/checkout@v4
       with:
@@ -52,22 +55,30 @@ jobs:
       run: uv python install 3.12
 
     - name: Install build dependencies
-      run: uv tool install bump2version
+      run: |
+        uv tool install bump2version
+        uv pip install twine
 
     - name: Generate development version
       id: version
       run: |
         # Handle different trigger types
-        BUMP_RULE="${{ inputs.bump_rule || 'patch' }}"
+        BUMP_RULE="${{ inputs.bump_rule || 'dev' }}"
         
         # Get current version
         CURRENT_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //')
         echo "Current version: $CURRENT_VERSION"
         
-        if [[ $CURRENT_VERSION == *".dev"* ]]; then
-          # Already a dev version - increment dev number
-          echo "Incrementing existing dev version"
-          bump2version --allow-dirty --no-commit --no-tag dev
+        if [ "$BUMP_RULE" = "dev" ]; then
+          if [[ $CURRENT_VERSION == *".dev"* ]]; then
+            # Already a dev version - increment dev number
+            echo "Incrementing existing dev version"
+            bump2version --allow-dirty --no-commit --no-tag dev
+          else
+            # Add dev1 to current version
+            echo "Creating new dev version"
+            bump2version --allow-dirty --no-commit --no-tag --new-version "${CURRENT_VERSION}.dev1" dev
+          fi
         else
           # Get the next version without committing
           NEXT_VERSION=$(bump2version --list $BUMP_RULE --dry-run | grep new_version | sed -r s,"^.*=",, )
@@ -87,9 +98,10 @@ jobs:
       run: uv build
 
     - name: Publish to TestPyPI
-      run: |
-        uv publish \
-          --repository-url https://test.pypi.org/legacy/
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
+      run: twine upload --non-interactive dist/*
 
     - name: Test install from TestPyPI
       run: |
