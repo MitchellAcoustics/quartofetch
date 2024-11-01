@@ -57,7 +57,6 @@ jobs:
     - name: Install build dependencies
       run: |
         uv tool install bump2version
-        uv tool install twine
 
     - name: Generate development version
       id: version
