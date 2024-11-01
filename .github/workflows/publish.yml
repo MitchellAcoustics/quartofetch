@@ -50,7 +50,7 @@ jobs:
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Install bump2version
-      run: uv pip install bump2version
+      run: uv tool install bump2version
 
     - name: Bump version
       run: |

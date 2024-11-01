@@ -52,7 +52,7 @@ jobs:
       run: uv python install 3.12
 
     - name: Install build dependencies
-      run: uv pip install bump2version
+      run: uv tool install bump2version
 
     - name: Generate development version
       id: version
