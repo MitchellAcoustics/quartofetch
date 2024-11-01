@@ -27,7 +27,7 @@ jobs:
       contents: write
 
   version-and-publish:
-    needs: [validate, test-publish]
+    needs: test-publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -77,6 +77,6 @@ jobs:
           --notes "Release v${{ env.NEW_VERSION }}" \
           dist/*
 
-    - name: Publish package distributions to TestPyPI
+    - name: Publish package distributions to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
