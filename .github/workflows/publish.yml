@@ -73,7 +73,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        NEW_VERSION=$(python setup.py --version)
+        # NEW_VERSION=$(python setup.py --version)
         gh release create "v${{ env.NEW_VERSION }}" \
           --title "Release v${{ env.NEW_VERSION }}" \
           --notes "Release v${{ env.NEW_VERSION }}" \
