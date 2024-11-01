@@ -34,6 +34,12 @@ jobs:
       with:
         fetch-depth: 0
     
+    - name: Set commit configs (for bump2version)
+      run: |
+        # configure user
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+
     - name: Install uv
       uses: astral-sh/setup-uv@v3
       with:
@@ -44,11 +50,6 @@ jobs:
     - name: Set up Python
       run: uv python install 3.12
 
-    - name: Configure Git
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
     - name: Install bump2version
       run: uv tool install bump2version
 
@@ -57,19 +58,22 @@ jobs:
         bump2version ${{ inputs.bump_rule }}
         git push
         git push --tags
+        # Store version for later use
+        echo NEW_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //') >> $GITHUB_ENV
 
     - name: Build package
       run: uv build
-
-    - name: Publish package distributions to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
 
     - name: Create GitHub Release
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
         NEW_VERSION=$(python setup.py --version)
-        gh release create "v${NEW_VERSION}" \
-          --title "Release v${NEW_VERSION}" \
-          --notes "Release v${NEW_VERSION}" \
+        gh release create "v${{ env.NEW_VERSION }}" \
+          --title "Release v${{ env.NEW_VERSION }}" \
+          --notes "Release v${{ env.NEW_VERSION }}" \
           dist/*
+
+    - name: Publish package distributions to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
