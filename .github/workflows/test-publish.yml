@@ -75,7 +75,6 @@ jobs:
         
         # Store version for later use
         echo NEW_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //') >> $GITHUB_ENV
-        echo "Generated version: ${{ env.NEW_VERSION }}"
 
     - name: Build package
       run: uv build
@@ -88,4 +87,4 @@ jobs:
     - name: Test install from TestPyPI
       run: |
         sleep 60  # Wait for package to be available
-        uv tool install quartofetch@${{ env.NEW_VERSION }} --index https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
+        uv tool install quartofetch@${{ env.NEW_VERSION }} --index https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --index-strategy unsafe-best-match
