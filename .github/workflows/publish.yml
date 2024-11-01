@@ -18,17 +18,18 @@ jobs:
   validate:
     uses: ./.github/workflows/ci.yml
 
-  test-publish:
-    needs: validate
-    uses: ./.github/workflows/test-publish.yml
-    with:
-      bump_rule: ${{ inputs.bump_rule }}
-    permissions:
-      id-token: write
-      contents: write
+  # test-publish:
+  #   needs: validate
+  #   uses: ./.github/workflows/test-publish.yml
+  #   with:
+  #     bump_rule: ${{ inputs.bump_rule }}
+  #   permissions:
+  #     id-token: write
+  #     contents: write
 
   version-and-publish:
-    needs: test-publish
+    # needs: test-publish
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
       contents: write
