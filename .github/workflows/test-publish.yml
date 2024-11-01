@@ -78,11 +78,10 @@ jobs:
     - name: Build package
       run: uv build
 
-    - name: Publish to TestPyPI
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_REPOSITORY_URL: https://test.pypi.org/legacy/
-      run: twine upload --non-interactive dist/*
+    - name: Publish package distributions to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
 
     - name: Test install from TestPyPI
       run: |
