@@ -56,8 +56,8 @@ jobs:
     - name: Bump version
       run: |
         bump2version ${{ inputs.bump_rule }}
-        git push
-        git push --tags
+        git push origin main
+        git push origin main --tags
         # Store version for later use
         echo NEW_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //') >> $GITHUB_ENV
 
