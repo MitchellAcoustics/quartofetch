@@ -62,12 +62,8 @@ jobs:
     - name: Generate development version
       id: version
       run: |
-        # Handle different trigger types
-        BUMP_RULE="${{ inputs.bump_rule || 'dev' }}"
-        echo "Bumping version with rule: $BUMP_RULE"
-        
         # Bump the version
-        bump2version --allow-dirty --no-commit --no-tag $BUMP_RULE
+        bump2version --allow-dirty $BUMP_RULE
         
         # Store version for later use
         NEW_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //')
@@ -86,4 +82,4 @@ jobs:
     - name: Test install from TestPyPI
       run: |
         sleep 60  # Wait for package to be available
-        uv pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ "quartofetch==${{ env.VERSION }}"
+        uv tool install "quartofetch==${{ env.VERSION }}" --index https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
