@@ -75,16 +75,18 @@ jobs:
             echo "Incrementing existing dev version"
             bump2version --allow-dirty --no-commit --no-tag dev
           else
-            # Add dev1 to current version
-            echo "Creating new dev version"
-            bump2version --allow-dirty --no-commit --no-tag --new-version "${CURRENT_VERSION}.dev1" dev
+            # Get current version components
+            BASE_VERSION=$CURRENT_VERSION
+            echo "Creating new dev version from $BASE_VERSION"
+            # Explicitly set the new version to include dev1
+            bump2version --allow-dirty --no-commit --no-tag --new-version "${BASE_VERSION}.dev1" dev
           fi
         else
-          # Get the next version without committing
+          # Handle patch/minor/major bumps
+          # First get the next version number
           NEXT_VERSION=$(bump2version --list $BUMP_RULE --dry-run | grep new_version | sed -r s,"^.*=",, )
-          echo "Next version will be: $NEXT_VERSION"
-          
-          # Create new dev version
+          echo "Next version will be: ${NEXT_VERSION}.dev1"
+          # Then create the dev version of it
           bump2version --allow-dirty --no-commit --no-tag --new-version "${NEXT_VERSION}.dev1" $BUMP_RULE
         fi
         
