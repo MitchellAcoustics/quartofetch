@@ -1,4 +1,4 @@
-# Q(uarto) Fetch
+# Quarto Fetch
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -24,10 +24,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 ### Quick Run (Recommended)
 
-Use `uvx` to run `qfetch` directly without installation:
+Use `uvx` to run `quartofetch` directly without installation:
 
 ```bash
-uvx qfetch
+uvx quartofetch
 ```
 
 ### Permanent Installation
@@ -35,7 +35,7 @@ uvx qfetch
 If you prefer to install the tool permanently:
 
 ```bash
-uv tool install qfetch
+uv tool install quartofetch
 ```
 
 ### Development Installation
@@ -43,8 +43,8 @@ uv tool install qfetch
 For development work:
 
 ```bash
-git clone https://github.com/MitchellAcoustics/qfetch
-cd qfetch
+git clone https://github.com/MitchellAcoustics/quartofetch
+cd quartofetch
 uv sync
 ```
 
@@ -67,13 +67,13 @@ papers:
 
 ```bash
 # Using uvx (recommended)
-uvx qfetch
+uvx quartofetch
 
 # Or with specific options
-uvx qfetch --config path/to/config.yml --force --log-level DEBUG
+uvx quartofetch --config path/to/config.yml --force --log-level DEBUG
 
 # If permanently installed
-qfetch --config path/to/config.yml
+quartofetch --config path/to/config.yml
 ```
 
 ## Project Structure

@@ -1,6 +1,6 @@
 [project]
-name = "qfetch"
-version = "0.1.0"
+name = "quartofetch"
+version = "0.1.0-dev15"
 description = "Fetch and manage Quarto paper repositories"
 readme = "README.md"
 authors = [
@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.scripts]
-qfetch = "qfetch.cli:main"
+quartofetch = "quartofetch.cli:main"
 
 [build-system]
 requires = ["hatchling"]

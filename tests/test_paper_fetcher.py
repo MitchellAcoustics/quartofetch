@@ -7,9 +7,9 @@ import yaml
 from unittest.mock import patch
 import subprocess
 
-from qfetch.paper_manager import Paper, PaperManager
-from qfetch.quarto_project import QuartoProject
-from qfetch.exceptions import GitTimeoutError, ConfigurationError
+from quartofetch.paper_manager import Paper, PaperManager
+from quartofetch.quarto_project import QuartoProject
+from quartofetch.exceptions import GitTimeoutError, ConfigurationError
 
 
 # Fixtures
@@ -151,7 +151,7 @@ class TestIntegration:
         config_path = "./_paper_sources.yml"
 
         # Run CLI
-        from qfetch.cli import CLI
+        from quartofetch.cli import CLI
 
         cli = CLI()
         with patch("sys.argv", ["qpf", "--config", str(config_path)]):

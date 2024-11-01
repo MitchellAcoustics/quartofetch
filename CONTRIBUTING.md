@@ -1,6 +1,6 @@
-# Contributing to Q(uarto) Fetch
+# Contributing to Quarto Fetch
 
-Thank you for considering contributing to Q(uarto) Fetch! Here are some guidelines to help you get started:
+Thank you for considering contributing to Quarto Fetch! Here are some guidelines to help you get started:
 
 ## How to Contribute
 
