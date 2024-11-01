@@ -86,5 +86,5 @@ jobs:
 
     - name: Test install from TestPyPI
       run: |
-        sleep 60  # Wait for package to be available
+        sleep 120  # Wait for package to be available
         uv tool install quartofetch@${{ env.NEW_VERSION }} --index https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --index-strategy unsafe-best-match
