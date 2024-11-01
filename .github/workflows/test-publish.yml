@@ -63,7 +63,7 @@ jobs:
       id: version
       run: |
         # Bump the version
-        bump2version --allow-dirty $BUMP_RULE
+        bump2version --allow-dirty ${{ inputs.bump_rule }}
         
         # Store version for later use
         NEW_VERSION=$(grep 'current_version = ' .bumpversion.cfg | sed 's/current_version = //')
