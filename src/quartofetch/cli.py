@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import List
 import yaml
 from loguru import logger
+import os
 
 from .logging_config import setup_logging, stage, substage
 from .paper_manager import Paper, PaperManager
@@ -46,6 +47,13 @@ class CLI:
         )
         parser.add_argument("--log-file", type=Path, help="Path to log file")
         return parser
+
+    # def check_environment():
+    #     """Check if required environment variables are set."""
+    #     if not os.getenv("QUARTO_PROJECT_RENDER_ALL"):
+    #         print("QUARTO_PROJECT_RENDER_ALL is not set. Exiting.")
+    #         return False
+    #     return True
 
     @stage("Configuration Loading")
     def load_config(self, config_path: Path) -> dict:
@@ -134,6 +142,11 @@ class CLI:
             # Setup logging
             log_level = "DEBUG" if args.debug else args.log_level
             setup_logging(console_level=log_level, log_file=args.log_file)
+
+            full_render = os.getenv("QUARTO_PROJECT_RENDER_ALL")
+            if not args.force and not full_render:
+                logger.info("quartofetch skipped due to partial render")
+                return 1
 
             # Log startup banner
             with logger.contextualize(padding=""):

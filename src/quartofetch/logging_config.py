@@ -5,7 +5,7 @@ from functools import wraps
 from loguru import logger
 
 # Global setting for console level
-console_level_setting = "SUCCESS"
+console_level_setting = "WARNING"
 
 
 class LogFormatter:
@@ -44,7 +44,7 @@ class LogFormatter:
             return self.FILE_FORMAT
 
 
-def setup_logging(console_level: str = "SUCCESS", log_file: str | None = None) -> None:
+def setup_logging(console_level: str = "WARNING", log_file: str | None = None) -> None:
     """Configure logging with optional file output."""
     global console_level_setting
     console_level_setting = console_level
