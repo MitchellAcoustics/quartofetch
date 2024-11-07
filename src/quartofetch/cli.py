@@ -145,8 +145,8 @@ class CLI:
 
             full_render = os.getenv("QUARTO_PROJECT_RENDER_ALL")
             if not args.force and not full_render:
-                logger.info("quartofetch skipped due to partial render")
-                return 1
+                logger.success("quartofetch skipped due to partial render")
+                return 0
 
             # Log startup banner
             with logger.contextualize(padding=""):
