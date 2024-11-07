@@ -157,3 +157,13 @@ class TestIntegration:
         with patch("sys.argv", ["qpf", "--config", str(config_path)]):
             result = cli.run()
             assert result == 1
+
+    def test_missing_env_var(self, temp_dir):
+        """Test exit for partial quarto render."""
+        from quartofetch.cli import CLI
+
+        cli = CLI()
+        with patch("sys.argv", ["qpf", "--config", "./_paper_sources.yml"]):
+            with patch("os.getenv", return_value=None):
+                result = cli.run()
+                assert result == 1
