@@ -34,7 +34,6 @@ path = "pyproject.toml"
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = """-v -ra --tb=short"""
-log_format = "%(message)s"
 
 [dependency-groups]
 dev = [
