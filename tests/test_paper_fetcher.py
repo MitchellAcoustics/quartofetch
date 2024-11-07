@@ -4,7 +4,6 @@ import pytest
 from pathlib import Path
 import tempfile
 import yaml
-import os
 from unittest.mock import patch
 import subprocess
 
